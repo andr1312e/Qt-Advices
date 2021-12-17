@@ -75,8 +75,10 @@ SP_MessageBoxCritical,
 SP_MessageBoxQuestion,
 ...
 //Просто вытащите его и используйте вот так
+
 QPixmap pixmap = this->style()->standardPixmap(QStyle::SP_TitleBarMenuButton);
 ui->label->setPixmap(pixmap);
+
 ```
 13. Оценивайте загрузку по количеству битов операционной системы.
 ```cpp
@@ -106,16 +108,22 @@ layout->addWidget(btn);
 ```cpp
 //Найдите элемент управления с указанным именем класса objectName
 QList<QWidget *> widgets = fatherWidget.findChildren<QWidget *>("widgetname");
+
 //Найти все QPushButton
 QList<QPushButton *> allPButtons = fatherWidget.findChildren<QPushButton *>();
+
 //Найдите подэлемент управления первого уровня, иначе он всегда будет проходить через все подэлементы управления.
 QList<QPushButton *> childButtons = fatherWidget.findChildren<QPushButton *>(QString(), Qt::FindDirectChildrenOnly);
+
 ```
 18. Используйте наследование с умом, чтобы определить, принадлежит ли оно к определенной категории.
 `` cpp
 QTimer * timer = new QTimer; // QTimer наследует QObject
+
 timer-> inherits ("QTimer"); // возвращает истину
+
 timer-> inherits ("QObject"); // возвращает истину
+
 timer-> inherits ("QAbstractButton"); // возвращает false
 `` '' 
 
@@ -211,3 +219,121 @@ QMainWindow > .QWidget {
 #if (_WIN32_WINNT >= 0x0600) // Windows Vista выше
 
 ```
+
+32. Определите версию Qt и количество пакетов сборки в pro 
+```cpp
+# Распечатать информацию о версии
+message(qt version: $$QT_VERSION)
+# Оценка текущего номера версии qt
+QT_VERSION = $$[QT_VERSION]
+QT_VERSION = $$split(QT_VERSION, ".")
+QT_VER_MAJ = $$member(QT_VERSION, 0)
+QT_VER_MIN = $$member(QT_VERSION, 1)
+# Следующее для Qt5.5 и выше
+greaterThan(QT_VER_MAJ, 4) {
+greaterThan(QT_VER_MIN, 4) {
+# Выполните некоторую обработку в соответствии с вашими потребностями
+}}
+
+#QT_ARCH является новым в Qt5 и не влияет на Qt4
+# Распечатать информацию о текущем комплекте сборки Qt
+message($$QT_ARCH)
+# Указывает комплект сборки платформы _arm
+contains(QT_ARCH, arm) {}
+# Указывает на 32-битный комплект сборки
+contains(QT_ARCH, i386) {}
+# Указывает на 64-битный комплект сборки
+contains(QT_ARCH, x86_64) {}
+
+# Фактически, Qt имеет встроенные переменные номера основной версии и номера подверсии
+# Оценка текущего номера версии qt
+message($$QT_ARCH : $$QT_VERSION -> $$QT_MAJOR_VERSION . $$QT_MINOR_VERSION)
+
+# Значение ниже, если версия <4.8
+lessThan(QT_MAJOR_VERSION, 5) {
+lessThan(QT_MINOR_VERSION, 8) {
+# Здесь нужно выполнить обработку
+}}
+
+# Значение ниже, если версия> = 5.5
+greaterThan(QT_MAJOR_VERSION, 4) {
+greaterThan(QT_MINOR_VERSION, 4) {
+# Здесь нужно выполнить обработку
+}}
+
+// Не судите версию в коде слишком просто
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+// Вот что делать
+#endif
+```
+
+33. После сворачивания Qt интерфейс будет восстановлен до зависания и зависания, плюс код
+```cpp
+void showEvent(QShowEvent *e)
+{
+    setAttribute(Qt::WA_Mapped);
+    QWidget::showEvent(e);
+}
+```
+34. Получите высоту строки заголовка: style () -> pixelMetric (QStyle :: PM TitleBarHeight); Щелкните PM TitleBarHeight, и вы найдете новый мир.
+35. Установите свойства экрана с высоким разрешением для поддержки высоких разрешений, таких как 2K4K, особенно для мобильных телефонов. app。Должен быть написан на main   Функциональный QApplication a(argc, argv);Спереди.
+```cpp
+#if (QT_VERSION > QT_VERSION_CHECK(5,6,0))
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+    QApplication a(argc, argv);
+```
+36. Если запущенная программа появляется Fault tolerant heap shim applied to current process. This is usually due to previous crashes.Ошибка。
+- Шаг 1: введите команду regedit Откройте реестр；
+- Шаг 2: Найдите узел HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers\；
+- Шаг 3: выберите Layers Ключ-значение, удалите собственный путь к программе из списка справа.
+37. Встроенная в Qt компоновка формы QFormLayout используется для автоматической генерации интерфейса формы комбинации метки + поля ввода. Она редко используется для установки компоновки, и наиболее часто используются горизонтальная компоновка, вертикальная компоновка и компоновка таблицы. .
+38. Qml для воспроизведения видео необходимо установить в Linux sudo apt-get install libpulse-dev.
+39. Вы можете напрямую наследовать QSqlQueryModel для реализации пользовательской модели QueryModel, такой как цвет шрифта столбца, заполнитель, другие стили и т. Д., И переписать QVariant CustomSqlModel :: data (const QModelIndex & index, int role) const.
+40. После Qt5 предоставляется класс QScroller для прямой прокрутки элемента управления.
+```cpp
+//Отключить горизонтальную полосу прокрутки
+ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//Отключить вертикальную полосу прокрутки
+ui->listWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//Установите горизонтальную прокрутку в соответствии со значением пикселя
+ui->listWidget->setHorizontalScrollMode(QListWidget::ScrollPerPixel);
+//Установите вертикальную прокрутку в соответствии со значением пикселя
+ui->listWidget->setVerticalScrollMode(QListWidget::ScrollPerPixel);
+//Установите объект прокрутки и метод прокрутки для прокрутки левой кнопкой мыши
+QScroller::grabGesture(ui->listWidget, QScroller::LeftMouseButtonGesture);
+//Также есть QScrollerProperties, который может устанавливать некоторые параметры прокрутки.
+```
+
+41. Если вы не хотите создавать файл базы данных при использовании базы данных sqlite, вы можете создать базу данных в памяти.
+```cpp
+QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+db.setDatabaseName(":memory:");
+```
+42. Очистите таблицу данных и сбросьте самоинкремент ID，sql = truncate table table_name。
+
+43. Qtchart Модуль от Qt5.7 Он идет вместе с ним, а минимальная компиляция требует Qt5.4. Не забудьте проверить это во время установки, по умолчанию он не отмечен. Использование этого модуля требует введения пространства имен.
+```cpp
+#include <QChartView>
+QT_CHARTS_USE_NAMESPACE
+class CustomChart : public QChartView
+```
+44. QPushButton Текст с выравниванием по левому краю, необходимо установить таблицу стилей QPushButton{text-align:left;}
+
+45. QLabel Есть три способа установить текст, освоить систему атрибутов Qt и сделать выводы друг из друга, вы можете добиться множества эффектов.
+```cpp
+//Традиционный подход
+ui->label->setText("hello");
+//Трюки
+ui->label->setProperty("text", "hello");
+//Атрибут Дафа
+ui->label->setStyleSheet("qproperty-text:hello;");
+```
+46. Умное использование QEventLoop Включение цикла обработки событий может привести к синхронному извлечению и возврату результатов без блокировки интерфейса. Проверьте исходный код, оказывается QEventLoop Выполнение потока создается заново внутри.
+```cpp
+QEventLoop loop;
+connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+loop.exec();
+```
+
+47. Несколько предопределенных переменных #if (defined webkit) || (defined webengine)，Удалите сгенерированный пустой debug и release содержание CONFIG -= debug_and_release。
