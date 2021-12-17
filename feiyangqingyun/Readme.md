@@ -30,3 +30,84 @@ RC_ICONS = main.ico
 QMAKE_LFLAGS += /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" #以管理员运行
 QMAKE_LFLAGS += /SUBSYSTEM:WINDOWS,"5.01" #VS2013 在XP运行
 ```
+8. В рабочем файле есть окно вывода отладки. Это очень полезно. Много раз, когда мы выпускаем программу, мы сталкиваемся с тем, что программа дважды щелкает и не запускается без сообщения об ошибке (на машине разработки все в норме. ), и мы не знаем, что произошло, или даже о задаче. Менеджер видит, что она запущена, но интерфейс не появляется. В это время вам нужно добавить это в файл pro проекта. Программа с интерфейсом также автоматически откроет окно отладки, чтобы распечатать информацию, которая удобна для поиска проблем. Как правило, он не может работать нормально. Программа будет печатать некоторые подсказки и так далее. 
+```cpp
+TEMPLATE    = app
+MOC_DIR     = temp/moc
+RCC_DIR     = temp/rcc
+UI_DIR      = temp/ui
+OBJECTS_DIR = temp/obj
+# Следующая строка используется для установки рабочего файла с окном вывода отладки 
+CONFIG      += console
+```
+9. Нарисуйте мозаичный фон QPainter :: drawTiledPixmap и нарисуйте прямоугольник с закругленными углами QPainter :: drawRoundedRect () вместо QPainter :: drawRoundRect (); 
+10. Удалить старый стиль 
+```cpp
+//Удалить исходный стиль 
+style()->unpolish(ui->btn);
+//Должна быть следующая строка, иначе он не будет удален 
+ui->btn->setStyleSheet("");
+//Сбросьте новый стиль элемента управления.
+style()->polish(ui->btn);
+```
+
+11.Получить атрибуты класса
+```cpp
+const QMetaObject *metaobject = object->metaObject();
+int count = metaobject->propertyCount();
+for (int i = 0; i < count; ++i) {
+    QMetaProperty metaproperty = metaobject->property(i);
+    const char *name = metaproperty.name();
+    QVariant value = object->property(name);
+    qDebug() << name << value;
+}
+```
+
+12. Встроенные значки Qt инкапсулированы в QStyle, и существует около 70 значков, которые можно использовать напрямую. 
+```cpp
+SP_TitleBarMenuButton,
+SP_TitleBarMinButton,
+SP_TitleBarMaxButton,
+SP_TitleBarCloseButton,
+SP_MessageBoxInformation,
+SP_MessageBoxWarning,
+SP_MessageBoxCritical,
+SP_MessageBoxQuestion,
+...
+//Просто вытащите его и используйте вот так
+QPixmap pixmap = this->style()->standardPixmap(QStyle::SP_TitleBarMenuButton);
+ui->label->setPixmap(pixmap);
+```
+13. Оценивайте загрузку по количеству битов операционной системы.
+```cpp
+win32 {
+    contains(DEFINES, WIN64) {
+        DESTDIR = $$PWD/../bin64
+    } else { 
+        DESTDIR = $$PWD/../bin32
+    }
+}
+```
+
+14. Qt5 значительно улучшил проверку безопасности.Если появляется setGeometry: Unable to set geometry, переместите видимость элемента управления после добавления его в макет. 
+15. Вы можете добавить элемент управления A в макет, а затем элемент управления B, чтобы задать макет. Такая гибкость улучшает комбинацию элементов управления. Например, вы можете добавить кнопку поиска слева и справа от текстового поля, а кнопку можно установить значок.
+```cpp
+QPushButton *btn = new QPushButton;
+btn->resize(30, ui->lineEdit->height());
+QHBoxLayout *layout = new QHBoxLayout(ui->lineEdit);
+layout->setMargin(0);
+layout->addStretch();
+layout->addWidget(btn);
+```
+
+16. Чтобы установить стиль элемента управления QLCDNumber, вам необходимо установить стиль сегмента QLCDNumber на плоский, иначе вы не обнаружите никакого эффекта.
+
+17. 巧妙的使用 findChildren 可以查找该控件下的所有子控件。 findChild 为查找单个。
+```cpp
+//Найдите элемент управления с указанным именем класса objectName
+QList<QWidget *> widgets = fatherWidget.findChildren<QWidget *>("widgetname");
+//Найти все QPushButton
+QList<QPushButton *> allPButtons = fatherWidget.findChildren<QPushButton *>();
+//Найдите подэлемент управления первого уровня, иначе он всегда будет проходить через все подэлементы управления.
+QList<QPushButton *> childButtons = fatherWidget.findChildren<QPushButton *>(QString(), Qt::FindDirectChildrenOnly);
+```
