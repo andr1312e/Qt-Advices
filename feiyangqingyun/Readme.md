@@ -2099,4 +2099,337 @@ QByteArray buffer = text.toUtf8();
 char *data = buffer.data();
 const char *data = buffer.constData();
 ```
+186. Вопрос о том, использовать ли QList или QVector всегда был вопросом выбора для многих Qter, в основном потому, что функции интерфейса, предоставляемые этими двумя гаджетами, в основном одинаковы, такие как вставка, удаление и значение.
+-QList можно использовать в большинстве случаев. Для таких операций, как добавление, добавление и вставка, QList обычно намного быстрее, чем QVector.
+-QList основан на индексном теге для хранения своих элементов в памяти, что быстрее, чем итерация итератора, и у вас меньше кода.
+-Если вам нужен реальный подключенный список, и вам нужно обеспечить фиксированное время вставки. Затем используйте итераторы вместо тегов. Используйте QLinkedList ().
+-Если вам нужно открыть непрерывное пространство памяти для хранения, или ваш элемент намного больше, чем указатель, вам нужно избегать отдельных операций вставки и переполнения стека, используйте QVector в это время.
+-Если вас больше беспокоит скорость выборки значений, используйте QVector.QCustomPlot использует QVector, и вам нужно часто извлекать большой объем данных для построения графика.
+-Если вас больше беспокоит скорость обновления данных (добавление, удаление и т. Д.), Используйте QList (соответствующая операция [] = value), но поскольку QChart в основном использует QList для доступа к данным (соответствующая операция находится в ()) , это также приводит к большим данным. Одна из причин медленного измерения подверглась критике.
+-В основном, как правило, график кривой - это доступ к данным, получение установленных данных для рисования.
+- При небольшом объеме данных между ними почти нет разницы в производительности.
+-Похоже, что Qt6 объединил эти два класса (Qter, который трудно выбрать, освобожден), QVector = QList, то есть QVector является псевдонимом QList, и базовый код может быть изменен, чтобы использовать преимущества двух .
 
+187. о mouseTracking Отслеживание мыши и tabletTracking Некоторые официальные инструкции по отслеживанию планшета.
+- mouseTracking Атрибут используется, чтобы сохранить, включено ли отслеживание мыши, и он не включен по умолчанию.
+- Если он не включен, соответствующий компонент принимает события движения мыши только тогда, когда во время движения мыши нажимается хотя бы одна кнопка мыши.
+- Когда отслеживание мыши включено, любой виджет событий движения мыши получит.
+- Компонентный метод hasMouseTracking() Используется для определения того, включено ли отслеживание мыши в данный момент.
+- setMouseTracking(bool enable) Используется для установки, следует ли включать отслеживание мыши.
+- Функции, связанные с отслеживанием мыши, в основном mouseMoveEvent()。
+- tabletTracking Атрибут сохраняет, следует ли включать отслеживание детали на планшете. По умолчанию не используется.
+- Когда отслеживание планшета не включено, компонент будет получать события движения пера только тогда, когда перо касается планшета или нажата хотя бы одна кнопка пера.
+- Если для компонента включена функция отслеживания планшета, компонент может получать событие движения стилуса, когда стилус приближается, но фактически не касается планшета.
+- Это может использоваться для контроля рабочего положения и вспомогательных рабочих функций компонентов (таких как поворот и наклон), а также для предоставления информационного интерфейса для этих операций для графического интерфейса.
+- Компонентный метод hasTabletTracking() Используется для определения того, включено ли отслеживание планшета в данный момент.
+- setTabletTracking(bool enable) Используется для настройки включения отслеживания планшета.
+- Функции, связанные с отслеживанием планшетов, в основном tabletEvent()。
+
+188. Что касается QTableWidget и других элементов управления, вызовите встроенные функции removeRow, clearContents и clear для удаления элемента и содержимого внутри и автоматически вызовите деструктор элемента или виджета ячейки для освобождения ресурсов, не освобождая его вручную.
+```cpp
+//Каждый вызов clearContents автоматически очищает предыдущий элемент
+ui->tableWidget->clearContents();
+for (int i = 0; i < count; ++i) {
+    ui->tableWidget->setItem(i, 0, new QTableWidgetItem("aaa"));
+    ui->tableWidget->setItem(i, 1, new QTableWidgetItem("bbb"));
+    ui->tableWidget->setCellWidget(i, 2, new QPushButton("ccc"));
+}
+```
+
+189. Для QListView (QListWidget), QTreeView (QTreeWidget), QTableView (QTableWidget) этого типа элемента управления вы можете использовать setChecked, чтобы соответствующий элемент имел эффект флажка. Многие люди (в том числе они сами) ошибочно думают, что это флажок. Этого элемента управления, на самом деле, нет. Это индикатор соответствующего элемента управления, поэтому, если вы хотите изменить стиль, вы не можете сказать, что установка стиля QCheckBox будет иметь эффект, но вам нужно выровнять индикатор индикатор отдельно, чтобы установить стиль.
+```cpp
+QCheckBox::indicator,QGroupBox::indicator,QTreeWidget::indicator,QListWidget::indicator{
+width:13px;
+height:13px;
+}
+
+QCheckBox::indicator:unchecked,QGroupBox::indicator:unchecked,QTreeWidget::indicator:unchecked,QListWidget::indicator:unchecked{
+image:url(:/qss/flatwhite/checkbox_unchecked.png);
+}
+
+QCheckBox::indicator:unchecked:disabled,QGroupBox::indicator:unchecked:disabled,QTreeWidget::indicator:unchecked:disabled,QListWidget::indicator:disabled{
+image:url(:/qss/flatwhite/checkbox_unchecked_disable.png);
+}
+
+QCheckBox::indicator:checked,QGroupBox::indicator:checked,QTreeWidget::indicator:checked,QListWidget::indicator:checked{
+image:url(:/qss/flatwhite/checkbox_checked.png);
+}
+
+QCheckBox::indicator:checked:disabled,QGroupBox::indicator:checked:disabled,QTreeWidget::indicator:checked:disabled,QListWidget::indicator:checked:disabled{
+image:url(:/qss/flatwhite/checkbox_checked_disable.png);
+}
+
+QCheckBox::indicator:indeterminate,QGroupBox::indicator:indeterminate,QTreeWidget::indicator:indeterminate,QListWidget::indicator:indeterminate{
+image:url(:/qss/flatwhite/checkbox_parcial.png);
+}
+
+QCheckBox::indicator:indeterminate:disabled,QGroupBox::indicator:indeterminate:disabled,QTreeWidget::indicator:indeterminate:disabled,QListWidget::indicator:indeterminate:disabled{
+image:url(:/qss/flatwhite/checkbox_parcial_disable.png);
+}
+```
+
+190. Что касается QTableView (с использованием источника данных модели), имени столбца QTableWidget и настроек ширины столбца, иногда обнаруживалось, что он не работает. Оказывается, существуют требования к порядку настроек кода. Например, setColumnCount должен быть установлен перед setColumnWidth, в противном случае нет количества столбцов. Откуда появился столбец? Wide, включая setHorizontalHeaderLabels для установки коллекции заголовков столбца, в помещении должен быть столбец первым.
+```cpp
+void frmSimple::initForm()
+{
+    //Создание экземпляра модели данных
+    model = new QStandardItemModel(this);
+
+    //Установите количество строк и столбцов
+    row = 100;
+    column = 10;
+    //Установить ширину столбца имени столбца
+    for (int i = 0; i < column; ++i) {
+        columnNames << QString("列%1").arg(i + 1);
+        columnWidths << 60;
+    }
+}
+
+void frmSimple::on_btnLoad1_clicked()
+{
+    //Сначала установите модель данных, иначе setColumnWidth не будет работать
+    ui->tableView->setModel(model);
+
+    //Установите количество столбцов, заголовки столбцов и ширину столбцов.
+    model->setColumnCount(column);
+    //Простой способ настроить коллекцию заголовков столбцов
+    model->setHorizontalHeaderLabels(columnNames);
+    for (int i = 0; i < column; ++i) {
+        ui->tableView->setColumnWidth(i, columnWidths.at(i));
+    }
+
+    //Добавить строки данных в цикл
+    QDateTime now = QDateTime::currentDateTime();
+    model->setRowCount(row);
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < column; ++j) {
+            QStandardItem *item = new QStandardItem;
+            //Последний столбец показывает разницу во времени.
+            if (j == column - 1) {
+                item->setText(now.addSecs(i).toString("yyyy-MM-dd HH:mm:ss"));
+            } else {
+                item->setText(QString("%1_%2").arg(i + 1).arg(j + 1));
+            }
+            model->setItem(i, j, item);
+        }
+    }
+}
+
+void frmSimple::on_btnLoad2_clicked()
+{
+    //Установите заголовок столбца, количество столбцов и ширину столбца
+    ui->tableWidget->setColumnCount(column);
+    //Простой способ настроить коллекцию заголовков столбцов
+    ui->tableWidget->setHorizontalHeaderLabels(columnNames);
+    for (int i = 0; i < column; ++i) {
+        ui->tableWidget->setColumnWidth(i, columnWidths.at(i));
+    }
+
+    //добавление данных
+    QDateTime now = QDateTime::currentDateTime();
+    ui->tableWidget->setRowCount(row);
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < column; ++j) {
+            QTableWidgetItem *item = new QTableWidgetItem;
+            //Последний столбец показывает разницу во времени.
+            if (j == column - 1) {
+                item->setText(now.addSecs(i).toString("yyyy-MM-dd HH:mm:ss"));
+            } else {
+                item->setText(QString("%1_%2").arg(i + 1).arg(j + 1));
+            }
+            ui->tableWidget->setItem(i, j, item);
+        }
+    }
+}
+```
+191. Что касается обработки очереди QList, наиболее часто используемой является вызов функции добавления для добавления элемента и вставки элемента вперед. Первое впечатление многих людей - это вызов insert (0, xxx) для вставки. Фактически, QList полностью предоставляет функцию prepend для добавления элемента вперед., Push_front.
+```cpp
+QStringList list;
+list << "aaa" << "bbb" << "ccc";
+
+//Добавить позже эквивалентно добавлению
+list.push_back("ddd");
+//Добавить вперед эквивалентно добавлению в начало
+list.push_front("xxx");
+
+//Добавить позже
+list.append("ddd");
+//Добавить вперед
+list.prepend("xxx");
+
+//Указание первой позиции для вставки эквивалентно добавлению в начало
+list.insert(0, "xxx");
+
+//Вывод QList("xxx", "aaa", "bbb", "ccc", "ddd")
+qDebug() << list;
+```
+192. Qt имеет несколько встроенных типов, связанных с QList, QMap и QHash, которые можно использовать напрямую, без написания длинного типа самостоятельно.
+```cpp
+//qwindowdefs.h
+typedef QList<QWidget *> QWidgetList;
+typedef QList<QWindow *> QWindowList;
+typedef QHash<WId, QWidget *> QWidgetMapper;
+typedef QSet<QWidget *> QWidgetSet;
+
+//qmetatype.h
+typedef QList<QVariant> QVariantList;
+typedef QMap<QString, QVariant> QVariantMap;
+typedef QHash<QString, QVariant> QVariantHash;
+typedef QList<QByteArray> QByteArrayList;
+```
+
+193. Интервал полей макета Qt, если он не был изменен, будет определять соответствующее значение по умолчанию в соответствии с системным разрешением и изменяемым коэффициентом масштабирования. Например, разрешение 1080P составляет 9 пикселей, а разрешение 2K - 9 пикселей. . Он становится 11 пикселей. Все программы, которые вы найдете на компьютере 1080P, имеют размер 6 и 9 пикселей. Как могут интервалы и поля стать такими большими при разрешениях 2K и 4K? Если вы хотите сохранить их независимо от того, какие разрешения все равно , вам нужно вручную сбросить эти значения, есть яма, например, по умолчанию 9, вы хотите, чтобы другие разрешения были 9, вы должны сначала изменить 9 на другие значения, такие как 10, а затем изменить на 9. Таким образом, это означает реальное изменение. Если вы измените 9 на 9 напрямую, оно не изменится. В правой части конструктора свойств есть небольшая стрелка для восстановления значения, она также серая. Только когда дисплей затемняется и появляется стрелка для восстановления значения по умолчанию. Указывает, что вы действительно изменили значение.
+
+### 2. Обновитесь до Qt6
+#### 2.1 Интуитивное резюме
+1. Было добавлено много колес, а исходные модули разбиты более детально, что, по оценкам, облегчит расширение управления.
+2. Удалены некоторые излишне инкапсулированные вещи (например, для одной и той же функции есть несколько функций), чтобы гарантировать, что только одна функция выполняет эту функцию.
+3. Некоторые методы, совместимые с Qt4 в Qt5, отбрасываются, и должны использоваться соответствующие новые функции в Qt5.
+4. Следуя по стопам времени, было добавлено много новых функций для удовлетворения постоянно растущих потребностей клиентов.
+5. Революционная переработка определенных модулей и типов и обработки повысила эффективность работы.
+6. Изменены типы параметров, такие как long * на qintptr * и т. Д., Которые больше подходят для последующего расширения и совместимости с 32 64-битными системами.
+7. Все типы данных double в исходном коде заменены на qreal, который очень согласован и единообразен с внутренними типами данных Qt.
+8. Я тестировал часть QWidget, но быстрая часть не тестировалась. Предполагается, что в быстрой части может быть больше обновлений.
+9. Настоятельно рекомендуется пока не использовать версию между Qt6.0 и Qt6.2, некоторые модули все еще отсутствуют, условно говоря, ошибок больше, и для начала официальной миграции рекомендуется версия 6.2.
+
+194. Универсальный метод: установите версию 5.15, найдите функцию сообщения об ошибках, переключитесь на исходный файл док-станции, вы увидите соответствующие слова подсказки QT_DEPRECATED_X («Use sizeInBytes») и новую функцию. Модификация в соответствии с этой подсказкой является правильной. Некоторые функции были недавно добавлены из Qt5.7, 5.9, 5.10 и других версий. Возможно, ваш проект все еще использует метод Qt4, но Qt6 уже совместим с этими старыми методами, и вам нужно его использовать полностью, когда вы достигнете нового метода Qt6.
+195. Базовый класс Qt6 разделен на ядро, и добавлен core5compat, поэтому вам нужно добавить соответствующий модуль в pro и ввести соответствующий файл заголовка в код.
+```cpp
+//pro Модуль импорта файлов
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
+
+//Добавьте заголовочные файлы в код
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+#include <QtWidgets>
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+#include <QtCore5Compat>
+#endif
+```
+196. По умолчанию в Qt6 включена поддержка экрана рекордов, интерфейс станет очень большим, и даже шрифт будет блеклым.Многие люди не будут к нему привыкать, потому что в этом режиме, если программа не использует devicePixelRatio для многих координат расчеты, 100% будет странно.Проблема в том, что координаты неточные. Чтобы отменить этот эффект, вы можете установить коэффициент масштабирования экрана с высоким разрешением.
+```cpp
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
+#endif
+```
+197. Исходная функция случайных чисел предлагает заменить на QRandomGenerator. Для обеспечения совместимости со всеми версиями qt минимальным изменением является прямое использование случайного числа в C ++, например замена функции qsrand на srand и qrand на rand. После при просмотре исходного кода он фактически инкапсулирован. Это случайное число в C ++, многие похожие пакеты, такие как sin, упакованы qSin.
+198. Свет QColor меняется на более светлый, а темный - на более темный Фактически, два метода более светлого и темного всегда существовали раньше.
+199. Fm.width в QFontMetricsF заменяется на fm.horizontalAdvance, и новая функция используется начиная с 5.11.
+200. Значение перечисления палитры QPalette, Foreground = WindowText, Background = Window, где Foreground и Background пропали, вы должны вместо этого использовать WindowText и Window, как это было раньше. Точно так же setTextColor был изменен на setForeground.
+201. Измените delta () QWheelEvent на angleDelta (). Y () и измените pos () на position ().
+202. Модуль svg разделяет svgwidgets. Если вы используете этот модуль, вам нужно добавить QT + = svgwidgets в pro. Точно так же модуль opengl разделяет openglwidgets.
+203. Функция margin () в qlayout заменена на contentMargins (). Left (). Глядя на исходный код, мы знаем, что предыдущая функция margin () возвращает contentsMargins (). Left (). Когда четыре значения совпадают , по умолчанию четыре значения одинаковы. Аналогичным образом был удален setMargin, и для всех используется setContentsMargins.
+204. Перед QChar c = 0xf105 все должно быть изменено на принудительное преобразование QChar c = (QChar) 0xf105, больше не будет неявного преобразования, иначе компилятор сообщит об ошибке: преобразование из int в QChar неоднозначно.
+205. qSort Подождите, пока некоторые функции будут использовать C ++  std::sort 。
+```cpp
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+    std::sort(ipv4s.begin(), ipv4s.end());
+#else
+    qSort(ipv4s);
+#endif
+```
+206. Qt :: WA_NoBackground заменяется на Qt :: WA_OpaquePaintEvent.
+207. Класс QMatrix заброшен и заменен на QTransform.Функции в основном те же.Класс QTransform всегда был доступен в Qt4.
+208. Таймер QTime был удален и должен быть изменен на QElapsedTimer.Класс QElapsedTimer всегда был доступен в Qt4.
+209. QApplication::desktop() Заброшен, заменен QApplication::primaryScreen()。
+```cpp
+#if (QT_VERSION > QT_VERSION_CHECK(5,0,0))
+#include "qscreen.h"
+#define deskGeometry qApp->primaryScreen()->geometry()
+#define deskGeometry2 qApp->primaryScreen()->availableGeometry()
+#else
+#include "qdesktopwidget.h"
+#define deskGeometry qApp->desktop()->geometry()
+#define deskGeometry2 qApp->desktop()->availableGeometry()
+#endif
+```
+210. Получение текущего индекса экрана и размера необходимо обрабатывать отдельно.
+```cpp
+//Получить текущий индекс экрана
+int QUIHelper::getScreenIndex()
+{
+    //Необходимо обработать несколько экранов
+    int screenIndex = 0;
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+    int screenCount = qApp->screens().count();
+#else
+    int screenCount = qApp->desktop()->screenCount();
+#endif
+
+    if (screenCount > 1) {
+        //Найдите экран, на котором находится текущая мышь
+        QPoint pos = QCursor::pos();
+        for (int i = 0; i < screenCount; ++i) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+            if (qApp->screens().at(i)->geometry().contains(pos)) {
+#else
+            if (qApp->desktop()->screenGeometry(i).contains(pos)) {
+#endif
+                screenIndex = i;
+                break;
+            }
+        }
+    }
+    return screenIndex;
+}
+
+//Получить область текущего размера экрана
+QRect QUIHelper::getScreenRect(bool available)
+{
+    QRect rect;
+    int screenIndex = QUIHelper::getScreenIndex();
+    if (available) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+        rect = qApp->screens().at(screenIndex)->availableGeometry();
+#else
+        rect = qApp->desktop()->availableGeometry(screenIndex);
+#endif
+    } else {
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+        rect = qApp->screens().at(screenIndex)->geometry();
+#else
+        rect = qApp->desktop()->screenGeometry(screenIndex);
+#endif
+    }
+    return rect;
+}
+```
+211. Класс QRegExp был перемещен в модуль core5compat, и необходимо активно внедрить заголовочный файл #include <QRegExp>.
+```cpp
+    //Установите ограничение на ввод только цифр + десятичных знаков
+    QString pattern = "^-?[0-9]+([.]{1}[0-9]+){0,1}$";
+    //Установить фильтр проверки IP-адреса
+    QString pattern = "(2[0-5]{2}|2[0-4][0-9]|1?[0-9]{1,2})";
+
+    //Если быть точным, QRegularExpression QRegularExpressionValidator доступен с 5.0 5.1.
+#if (QT_VERSION >= QT_VERSION_CHECK(6,0,0))
+    QRegularExpression regExp(pattern);
+    QRegularExpressionValidator *validator = new QRegularExpressionValidator(regExp, this);
+#else
+    QRegExp regExp(pattern);
+    QRegExpValidator *validator = new QRegExpValidator(regExp, this);
+#endif
+    lineEdit->setValidator(validator);
+```
+212. Изменились параметры построения QWheelEvent и соответствующая функция ориентации вычислений.
+```cpp
+//Имитировать колесо мыши
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+QWheelEvent wheelEvent(QPoint(0, 0), -scal, Qt::LeftButton, Qt::NoModifier);
+#else
+QWheelEvent wheelEvent(QPointF(0, 0), QPointF(0, 0), QPoint(0, 0), QPoint(0, -scal), Qt::LeftButton, Qt::NoModifier, Qt::ScrollBegin, false);
+#endif
+QApplication::sendEvent(widget, &wheelEvent);
+
+//Непосредственно изменить значение с помощью колесика мыши
+QWheelEvent *whellEvent = (QWheelEvent *)event;
+//Угол прокрутки, * 8 - это расстояние прокрутки мыши
+#if (QT_VERSION < QT_VERSION_CHECK(6,0,0))
+int degrees = whellEvent->delta() / 8;
+#else
+int degrees = whellEvent->angleDelta().x() / 8;
+#endif
+//Количество шагов прокрутки, * 15 - угол прокрутки мыши
+int steps = degrees / 15;
+```
