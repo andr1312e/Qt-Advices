@@ -23,6 +23,14 @@ QString s1("Привет");
 QLatin1String s2 («вы все»);
 QString msg = s1 % s2 % "как дела?";
 ```
+Установив глобальную опцию ```QT_USE_STRING_BUILDER```, оператор конкатенации + всегда будет автоматически заменяться классом шаблона QStringBuilder, и вам не нужно вручную изменять код, чтобы извлечь из этого пользу.
+
+```cpp
+DEFINES +=                 \
+  DQT_NO_URL_CAST_FROM_STRING\
+  QT_USE_STRING_BUILDER \
+```
+
 3.4343
 
 
