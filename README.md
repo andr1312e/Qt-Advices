@@ -1,6 +1,11 @@
 # Qt-Advices
 
+Перевод советов от китайца
 https://github.com/andr1312e/Qt-Advices/tree/main/feiyangqingyun#readme
+
+гугл стайл чистого кода
+https://evgenykislov.com/wp-content/custom/cpp_codestyle/cppguide_ru.html
+
 1-7 строки
 Russian qt advices советы кути русский по русски рекомендации кутэ
 
