@@ -8,7 +8,7 @@
 | зебра-строки  | прикольные                |    $1         |
 
 * Very Sleepy — это бесплатный профилировщик процессов C/C++ для систем Windows. - Скачать http://www.codersnotes.com/sleepy/.
-* 
+
 ![image](https://user-images.githubusercontent.com/22058642/152636162-16a5b448-ffc7-487c-a33c-d9d678d2e2be.png)
 
 Как юзать: http://supercomputingblog.com/windows/how-to-profile-c-code-in-visual-studio-for-free/
@@ -18,3 +18,11 @@
  https://github.com/GPUOpen-Archive/CodeXL/releases/tag/v2.6
  
 https://developer.amd.com/wordpress/media/2012/10/CodeXL_Quick_Start_Guide.pdf - стартовый гайд
+
+* Люк Стэкуокер (http://lukestackwalker.sourceforge.net/) гораздо лучший пользовательский интерфейс, чем Very Sleepy, и доступен для Windows, но
+к сожалению, он поддерживает только отладочную информацию компилятора Microsoft. Уступает проге выше. Кому то может и пригнянется
+
+![image](https://user-images.githubusercontent.com/22058642/152636444-9e6e46fe-b969-46a0-bd0d-55d0eb451f25.png)
+
+* По пямяти. Здесь, я должен признать, у нас нет хорошего инструмента профилирования памяти с открытым исходным кодом сравнимо с Valgrind's Massif в Linux, который может показать использование памяти трассировать и атрибутировать части используемой памяти.
+Мы можем получить общий обзор используемой памяти через Sysinternal, но чтобы увидеть, что потребляет память, нам пришлось бы использовать программу инструмент, как GammaRay. Еще инструменты для Windows - heob, который даже интегрирован с Qt Creator или Dr. Memory.
