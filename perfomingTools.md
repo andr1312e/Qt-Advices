@@ -1,12 +1,6 @@
 ВИНДА:
 Вертикальные линии обозначают столбцы.
 
-| Что           | Зачем                     | Надо собирать |
-| ------------- |:------------------:       | -----:        |
-| Very Sleepy   | профилировщик процессов   | нет        |
-| MD CodeXL     | профилировщик процессов   |  нет         |
-| зебра-строки  | прикольные                |    $1         |
-
 * Very Sleepy — это бесплатный профилировщик процессов C/C++ для систем Windows. - Скачать http://www.codersnotes.com/sleepy/.
 
 ![image](https://user-images.githubusercontent.com/22058642/152636162-16a5b448-ffc7-487c-a33c-d9d678d2e2be.png)
@@ -26,3 +20,12 @@ https://developer.amd.com/wordpress/media/2012/10/CodeXL_Quick_Start_Guide.pdf -
 
 * По пямяти. Здесь, я должен признать, у нас нет хорошего инструмента профилирования памяти с открытым исходным кодом сравнимо с Valgrind's Massif в Linux, который может показать использование памяти трассировать и атрибутировать части используемой памяти.
 Мы можем получить общий обзор используемой памяти через Sysinternal, но чтобы увидеть, что потребляет память, нам пришлось бы использовать программу инструмент, как GammaRay. Еще инструменты для Windows - heob, который даже интегрирован с Qt Creator или Dr. Memory.
+
+* RAMMap — бесплатная утилита, разработанная Марком Руссиновичем и Брайсом Когсвеллом из компании Sysinternals. Качаем:
+https://docs.microsoft.com/en-us/sysinternals/downloads/rammap. Там же и как юзать.
+
+![image](https://user-images.githubusercontent.com/22058642/152636632-777aa55f-f811-402e-a385-dcf4453d3640.png)
+
+* Гамма рей статья о том как и что https://habr.com/ru/company/infopulse/blog/258411/. Бинарников под Windows нет. Исходники здесь: https://github.com/KDAB/GammaRay. Для сборки под Windows мне понадобилось поправить файл CMakeLists.txt.
+
+
