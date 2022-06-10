@@ -5,6 +5,8 @@ https://github.com/andr1312e/Qt-Advices/tree/main/feiyangqingyun#readme
 
 гугл стайл чистого кода
 https://evgenykislov.com/wp-content/custom/cpp_codestyle/cppguide_ru.html
+Еще один гугл гайд
+https://netvl.github.io/guice/users-guide.html
 
 Russian qt advices советы кути русский по русски рекомендации кутэ
 
