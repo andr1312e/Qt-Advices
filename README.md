@@ -23,13 +23,13 @@ Russian qt advices советы кути русский по русски рек
 А вот 
 ```cpp
       int distance = 2000;
-      const int distDiff = distance - ustirovRep.GetNormalMessage().Distance;\\quint32
-      const int diff = qAbs(distDiff);
+      const int diff = qAbs(distance - ustirovRep.GetNormalMessage().Distance);
 ```
 в diff дает -1;
 
 <details>
   <summary>Скришнот</summary>
+      
   ![image](https://user-images.githubusercontent.com/22058642/181718798-6a7f5f8b-2e07-4379-ba88-9e3653be24e5.png)
 
 </details>
