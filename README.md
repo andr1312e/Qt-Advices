@@ -11,7 +11,28 @@ https://netvl.github.io/guice/users-guide.html
 Russian qt advices советы кути русский по русски рекомендации кутэ
 
 КОРЕ
+ЧИСЛА
 
+1. Использовать ```qAbs``` или его std варинт надо с большой острожностью. Например строки:
+```cpp
+      int distance = 2000;
+      const int distDiff = distance - ustirovRep.GetNormalMessage().Distance;\\quint32
+      const int diff = qAbs(distDiff);
+```
+Дает при distDiff=-1 в diff результат 1
+А вот 
+```cpp
+      int distance = 2000;
+      const int distDiff = distance - ustirovRep.GetNormalMessage().Distance;\\quint32
+      const int diff = qAbs(distDiff);
+```
+в diff дает -1;
+
+<details>
+  <summary>Скришнот</summary>
+  ![image](https://user-images.githubusercontent.com/22058642/181718798-6a7f5f8b-2e07-4379-ba88-9e3653be24e5.png)
+
+</details>
 СТРОКИ
 
 1. Проблема со строковыми классами ```QString``` в целом заключается в том, что они копируют содержимое  char* при их создании. ```QByteArray``` представляет собой последовательность байтов без какой-либо кодировки, поэтому ее можно
