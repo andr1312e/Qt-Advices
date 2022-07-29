@@ -15,14 +15,14 @@ Russian qt advices советы кути русский по русски рек
 
 1. Использовать ```qAbs``` или его std варинт надо с большой острожностью. Например строки:
 ```cpp
-      int distance = 2000;
-      const int distDiff = distance - ustirovRep.GetNormalMessage().Distance;\\quint32
+      int distance = 2100;
+      const int distDiff = distance - ustirovRep.GetNormalMessage().Distance;\\quint32 2101
       const int diff = qAbs(distDiff);
 ```
 Дает при distDiff=-1 в diff результат 1
 А вот 
 ```cpp
-      int distance = 2000;
+      int distance = 2100;
       const int diff = qAbs(distance - ustirovRep.GetNormalMessage().Distance);
 ```
 в diff дает -1;
